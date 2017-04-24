@@ -1,8 +1,10 @@
+CREATE DATABASE [MoviesAbundant-DVDRental]
+GO
 USE [MoviesAbundant-DVDRental];
 
 -- Create Branch Table
 CREATE TABLE Branch (
-	ID varchar(7) PRIMARY KEY,
+	ID varchar(4) PRIMARY KEY,
 	BranchAddress varchar(255) NOT NULL
 );
 
@@ -14,7 +16,7 @@ CREATE TABLE Customer (
 	HomeAddress varchar(255),
 	Email varchar(50),
     PhoneNumber varchar(11) NOT NULL,
-	Branch_ID varchar(7) FOREIGN KEY REFERENCES Branch(ID) NOT NULL
+	Branch_ID varchar(4) FOREIGN KEY REFERENCES Branch(ID) NOT NULL
 );
 
 -- Create Catalogue Table
@@ -29,7 +31,7 @@ CREATE TABLE Catalogue (
 CREATE TABLE DVD (
 	ID varchar(7) PRIMARY KEY,
 	Catalogue_ID varchar(7) FOREIGN KEY REFERENCES Catalogue(ID) NOT NULL,
-	Branch_ID varchar(7) FOREIGN KEY REFERENCES Branch(ID) NOT NULL
+	Branch_ID varchar(4) FOREIGN KEY REFERENCES Branch(ID) NOT NULL
 );
 
 -- Create Feedback Table
@@ -53,11 +55,11 @@ CREATE TABLE RentalRecord (
 
 -- Create Staff Table 
 CREATE TABLE Staff (
-	ID varchar(7) PRIMARY KEY,
+	ID varchar(6) PRIMARY KEY,
     FirstName varchar(50) NOT NULL,
     LastName varchar(50) NOT NULL,
 	Gender varchar(6) NOT NULL,
 	Position varchar(20) NOT NULL,
 	HomeAddress varchar(255),
-	Branch_ID varchar(7) FOREIGN KEY REFERENCES Branch(ID)
+	Branch_ID varchar(4) FOREIGN KEY REFERENCES Branch(ID)
 );
