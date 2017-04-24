@@ -1,10 +1,16 @@
-/* ===== i.	Produce a list of the latest movies by genres for the current month. */
+/* ===== i.	Produce a list of the latest movies by genres for the current month. 
+
+!! WE USED 2016 TO SHOW YOU DATA. OR NOT THE [ YEAR(ReleaseDate)=YEAR(getdate()) ] CAN BE USED TO GET THE CURRENT YEAR*/
 SELECT MovieName, Genres, ReleaseDate
 FROM Catalogue
-where YEAR(ReleaseDate)=YEAR(getdate()) AND MONTH(ReleaseDate)=MONTH(getdate())
+where YEAR(ReleaseDate)='2016' AND MONTH(ReleaseDate)=MONTH(getdate())
 ORDER BY Genres, ReleaseDate DESC;
 
-/* ===== ii.Produce a list of the top 3 most popular movies for a given genre for the current month. */
+
+
+/* ===== ii.Produce a list of the top 3 most popular movies for a given genre for the current month. 
+
+!! WE USED 2016 TO SHOW YOU DATA. OR NOT THE [ YEAR(ReleaseDate)=YEAR(getdate()) ] CAN BE USED TO GET THE CURRENT YEAR*/*/
 SELECT TOP(3) c.MovieName, c.ID, c.ReleaseDate, Counted.TotalRented
 FROM Catalogue AS c, 
 		(SELECT DVD.Catalogue_ID, COUNT(DVD_ID) AS TotalRented 
@@ -12,7 +18,9 @@ FROM Catalogue AS c,
 		GROUP BY DVD.Catalogue_ID) AS Counted
 
 where YEAR(c.ReleaseDate)=YEAR(getdate()) AND MONTH(c.ReleaseDate)=MONTH(getdate()) AND Counted.Catalogue_ID=c.ID
-ORDER BY Counted.TotalRented DESC
+ORDER BY Counted.TotalRented DESC;
+
+
 
 
 /* iii.	Produce a listing of DVDs currently rented by each member at a given branch. 
@@ -22,13 +30,17 @@ FROM (SELECT r.ID, d.Branch_ID, cust.FirstName, cust.LastName, d.Catalogue_ID, r
 WHERE cat.ID=new.Catalogue_ID;
 
 
+
+
 /* ===== iv. Produce a listing showing the total number of DVDs currently rented by each member from all of Movies Abdundant’s branches. 
 			 Sort your list in alphabetical order of the members’ last names. */
-SELECT c.LastName, COUNT(r.DVD_ID) AS TotalDVDRented
+SELECT c.FirstName,c.LastName, COUNT(r.DVD_ID) AS TotalDVDRented
 FROM RentalRecord AS r, Customer AS c
 WHERE r.Customer_ID=c.ID
-GROUP BY c.LastName
+GROUP BY c.LastName, c.FirstName
 ORDER BY c.LastName;
+
+
 
 
 /*====v.	Produce a listing of the total number of copies of a particular movie that is available at any of Movies Abdundant’s branches. 
@@ -47,7 +59,9 @@ FROM
 
 WHERE deduct.Catalogue_ID=Counted.Catalogue_ID AND Counted.Branch_ID=deduct.Branch_ID
 GROUP BY deduct.Catalogue_ID, deduct.TotalStock, deduct.Branch_ID, Counted.TotalRented, deduct.MovieName
-ORDER BY deduct.Branch_ID, deduct.Catalogue_ID
+ORDER BY deduct.Branch_ID, deduct.Catalogue_ID;
+
+
 
 
 /*vi.	Produce a list displaying the total copies of DVDs categorized by genres that the company has in totality, across all its branches. ============= */
@@ -56,16 +70,23 @@ FROM DVD AS d INNER JOIN Catalogue AS c ON d.Catalogue_ID=c.ID
 GROUP BY c.Genres;
 
 
+
+
+
 /*vii.	Show a list of all members with outstanding fines for overdue DVDs. 
 List the member IDs, names, movie IDs, movie title, date borrowed, date due, total number of days overdue and fine incurred for each overdue DVD. 
 ====== OVERDUE CHARGES IS RM 2 A DAY   ============= */
-SELECT Overdue.Customer_ID, c.FirstName, cat.MovieName,Overdue.DueDate, Overdue.ReturnDate, Overdue.TotalOfOverdueDays, Overdue.TotalOfOverdueDays*2 AS RM
+SELECT Overdue.Customer_ID, c.FirstName, cat.ID, cat.MovieName, Overdue.RentDate,Overdue.DueDate, Overdue.ReturnDate, Overdue.TotalOfOverdueDays, Overdue.TotalOfOverdueDays*2 AS 'Overdue Charges, RM'
 FROM (
-		SELECT r.Customer_ID, r.ReturnDate, r.DueDate, d.Catalogue_ID,DateDiff(day, r.DueDate, r.ReturnDate) AS TotalOfOverdueDays
+		SELECT r.Customer_ID, r.RentDate, r.ReturnDate, r.DueDate, d.Catalogue_ID,DateDiff(day, r.DueDate, r.ReturnDate) AS TotalOfOverdueDays
 		FROM RentalRecord AS r INNER JOIN DVD As d ON r.DVD_ID=d.ID
 		WHERE ReturnDate>DueDate ) AS Overdue 
 INNER JOIN Customer AS c ON c.ID=Overdue.Customer_ID 
 INNER JOIN Catalogue AS cat ON cat.ID=Overdue.Catalogue_ID ;
+
+
+
+
 
 
 /*viii.	Produce a list of movies with the total number of various feedback ratings given by members for each movie, 
@@ -76,7 +97,11 @@ FROM ( SELECT count(f.Scale) AS GOOD, cat.MovieName FROM Feedback AS f, Catalogu
 ( SELECT count(f.Scale) AS BAD, cat.MovieName FROM Feedback AS f, Catalogue AS cat WHERE f.Scale='1' AND cat.ID=f.Catalogue_ID GROUP BY cat.MovieName) AS scale01,
 Feedback AS f, Catalogue AS cat
 WHERE f.Catalogue_ID=cat.ID AND scale01.MovieName=cat.MovieName AND scale02.MovieName=cat.MovieName AND scale03.MovieName=cat.MovieName
-GROUP BY cat.MovieName, scale01.BAD, scale02.AVERAGE, scale03.GOOD
+GROUP BY cat.MovieName, scale01.BAD, scale02.AVERAGE, scale03.GOOD;
+
+
+
+
 
 
 /*==== ix.	Produce a listing showing the staff distribution at each branch. 
@@ -99,6 +124,5 @@ FROM Branch as b FULL OUTER JOIN Staff AS s ON b.ID=s.Branch_ID FULL OUTER JOIN
 	ON mStaff.ID=b.ID
 
 GROUP BY b.ID, Supervisors.Supervisors, Manager.Manager, fStaff.FemaleStaff, mStaff.MaleStaff
-ORDER BY b.ID
-
+ORDER BY b.ID;
 
